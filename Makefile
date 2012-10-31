@@ -19,14 +19,14 @@ OBJS = $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(notdir $(SRCS)))
 OBJS_EX = $(patsubst %.cpp,$(OBJ_DIR)/example/%.o,$(notdir $(SRCS_EX)))
 
 #Public header files
-HDR_PUB = src/peertalk.h src/Peertalk.hpp src/Protocol.hpp src/Channel.hpp
+HDR_PUB = src/peertalk.h src/Peertalk.hpp src/Protocol.hpp src/Channel.hpp src/Device.hpp
 
 .PHONY: all
 all: peertalk
 
 .PHONY: example
 example: peertalk $(OBJS_EX)
-	$(CXX) $(CXXFLAGS) -o bin/$@ $(OBJS_EX) $(LIBINC) -lpeertalk -lusbmuxd
+	$(CXX) $(CXXFLAGS) -o bin/$@ $(OBJS_EX) bin/libpeertalk.a $(LIBINC) -lusbmuxd
 
 .PHONY: peertalk
 peertalk: $(OBJS)
@@ -41,7 +41,7 @@ peertalk: $(OBJS)
 	cp $(HDR_PUB) $(HDR_DIR)
 
 $(OBJ_DIR)/example/%.o: $(SRC_DIR)/example/%.cpp
-	mkdir -p $(OBJ_DIR)/example
+	@mkdir -p $(OBJ_DIR)/example
 	$(CXX) $(CXXFLAGS) $(HDRINC) -o $@ -c $<
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp

@@ -43,10 +43,14 @@ public:
 
 private:
 	bool _listening;
-	std::vector<const Device> _devices;
+	typedef std::map<int,Device> DeviceMap;
+	Peertalk::DeviceMap _devices;
 
 	Peertalk(const Peertalk& other);
 	Peertalk& operator= (const Peertalk& other);
+
+	void addDevice(const usbmuxd_device_info_t& device);
+	void removeDevice(const usbmuxd_device_info_t& device);
 
 	void printDevice(const usbmuxd_device_info_t& device) const;
 	friend void pt_usbmuxd_cb(const usbmuxd_event_t *event, void *user_data);

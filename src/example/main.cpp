@@ -11,7 +11,7 @@ void sig_interrupt(int sig)
 
 int main()
 {
-	std::cout << "Peer-Talk C++ Example\nAuthor: Joseph Humphrey\nBased on the work of: Rasmus Andersson\n\n";
+	std::cout << "Peer-Talk C++ Example\nAuthor: Joseph Humphrey\n\n";
 	std::cout << "Looking for devices" << std::endl;
 
 	peertalk::Peertalk client;

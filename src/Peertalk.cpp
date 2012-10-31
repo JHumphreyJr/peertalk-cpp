@@ -13,10 +13,10 @@ void pt_usbmuxd_cb(const usbmuxd_event_t *event, void *user_data)
 	switch(event->event)
 	{
 		case UE_DEVICE_ADD:
-			//TODO: device added
+			client->addDevice(event->device);
 		break;
 		case UE_DEVICE_REMOVE:
-			//TODO: device removed
+			client->removeDevice(event->device);
 		break;
 	}
 
@@ -28,7 +28,6 @@ Peertalk::Peertalk() :
 	_listening(false),
 	_devices()
 {
-
 }
 
 int Peertalk::startListeningForDevices()
@@ -58,6 +57,20 @@ void Peertalk::stopListeningForDevices()
 bool Peertalk::isListening()
 {
 	return _listening;
+}
+
+void Peertalk::addDevice(const usbmuxd_device_info_t& device)
+{
+	if(_devices.find(device.handle) == _devices.end())
+		_devices.insert(DeviceMap::value_type(device.handle, Device(device)));
+}
+
+void Peertalk::removeDevice(const usbmuxd_device_info_t& device)
+{
+	DeviceMap::iterator it = _devices.find(device.handle);
+
+	if(it != _devices.end())
+		_devices.erase(it);
 }
 
 void Peertalk::printDevice(const usbmuxd_device_info_t& device) const
