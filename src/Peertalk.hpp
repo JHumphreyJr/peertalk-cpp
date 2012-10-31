@@ -1,7 +1,11 @@
 #ifndef PEERTALK_HPP
 #define PEERTALK_HPP
 
+#include <vector>
+
 #include <usbmuxd.h>
+
+#include "Device.hpp"
 
 namespace peertalk
 {
@@ -18,8 +22,10 @@ public:
 	Start listening for device connections
 	*
 	@discussion Devices already connected will trigger a callback
+	*
+	@return 0 for success -1 for failure
 	*/
-	void startListeningForDevices();
+	int startListeningForDevices();
 
 	/**
 	Stop listening for device connections
@@ -37,11 +43,12 @@ public:
 
 private:
 	bool _listening;
+	std::vector<const Device> _devices;
 
 	Peertalk(const Peertalk& other);
 	Peertalk& operator= (const Peertalk& other);
 
-	void printDevice(const usbmuxd_device_info_t& device);
+	void printDevice(const usbmuxd_device_info_t& device) const;
 	friend void pt_usbmuxd_cb(const usbmuxd_event_t *event, void *user_data);
 };
 

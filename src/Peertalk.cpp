@@ -25,20 +25,24 @@ void pt_usbmuxd_cb(const usbmuxd_event_t *event, void *user_data)
 }
 
 Peertalk::Peertalk() :
-	_listening(false)
+	_listening(false),
+	_devices()
 {
 
 }
 
-void Peertalk::startListeningForDevices()
+int Peertalk::startListeningForDevices()
 {
 	//Subscribe for device connections
 	int status = usbmuxd_subscribe(pt_usbmuxd_cb, this);
 	if(status)
 	{
-		throw;
+		return -1;
 	}
+	
 	_listening = true;
+
+	return 0;
 }
 
 void Peertalk::stopListeningForDevices()
@@ -56,9 +60,9 @@ bool Peertalk::isListening()
 	return _listening;
 }
 
-void Peertalk::printDevice(const usbmuxd_device_info_t& device)
+void Peertalk::printDevice(const usbmuxd_device_info_t& device) const
 {
-	std::cout << device.uuid << " - " << device.product_id << std::endl;
+	std::cout << Device(device) << std::endl;
 }
 
 Peertalk::~Peertalk()
