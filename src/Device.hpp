@@ -1,10 +1,20 @@
 #include <map>
 #include <string>
+#include <vector>
 #include <iostream>
+
 #include <usbmuxd.h>
+
+#include <boost/cstdint.hpp>
+#include <boost/shared_ptr.hpp>
+
+#include "Channel.hpp"
 
 namespace peertalk
 {
+	///Forward reference so that we can be best friends
+	class Peertalk;
+
 	/**
 	Represents an iOS device detected by usbmuxd. This class
 	can be used to retrieve info and initiate a TCP session 
@@ -19,6 +29,17 @@ namespace peertalk
 		@param device The underlying usbmuxd device.
 		*/
 		explicit Device(const usbmuxd_device_info_t& device);
+		Device();
+		Device(const Device& other);
+
+		/**
+		Returns whether or not the device is connected
+		*
+		@return true if connected, otherwise false.
+		*/
+		bool isConnected() const;
+
+		int handle() const;
 
 		/**
 		Returns the 40 character UUID associated with the device.
@@ -41,14 +62,29 @@ namespace peertalk
 		*/
 		uint16_t productID() const;
 
+		int connect(uint16_t port);
+
+		~Device();
+
 	private:
-		bool _valid;
-		const usbmuxd_device_info_t _device;
-		const std::string _uuid;
-		const std::string _productName;
+		typedef boost::shared_ptr<Device> shared_ptr;
+		typedef std::map<std::string, std::vector<Device*> > DeviceMap;
+		//typedef std::map<Device&, std::vector<Channel> > ChannelMap;
+		typedef std::map<uint16_t, std::string> ProductMap;
+		
+		///Keeps track of all devices associated by their uuid
+		static DeviceMap s_devices;
+		///Keeps tracks of all channels associated with a device
+		//static ChannelMap channels;
+		///Internal list of string values for products
+		static ProductMap s_products;
 
-		static std::map<uint16_t, std::string> products;
+		bool _connected;
+		usbmuxd_device_info_t _device;
+		std::string _uuid;
+		std::string _productName;
 
+		friend class Peertalk;
 		friend std::ostream & operator<<(std::ostream & os, const Device& v);
 	};
 }

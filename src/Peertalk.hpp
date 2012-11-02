@@ -4,6 +4,7 @@
 #include <vector>
 
 #include <usbmuxd.h>
+#include <boost/shared_ptr.hpp>
 
 #include "Device.hpp"
 
@@ -42,8 +43,9 @@ public:
 	~Peertalk();
 
 private:
+	typedef std::map<int,Device::shared_ptr> DeviceMap;
+
 	bool _listening;
-	typedef std::map<int,Device> DeviceMap;
 	Peertalk::DeviceMap _devices;
 
 	Peertalk(const Peertalk& other);
@@ -52,7 +54,6 @@ private:
 	void addDevice(const usbmuxd_device_info_t& device);
 	void removeDevice(const usbmuxd_device_info_t& device);
 
-	void printDevice(const usbmuxd_device_info_t& device) const;
 	friend void pt_usbmuxd_cb(const usbmuxd_event_t *event, void *user_data);
 };
 
