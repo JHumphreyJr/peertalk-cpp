@@ -17,7 +17,7 @@ namespace peertalk
 
 	/**
 	Represents an iOS device detected by usbmuxd. This class
-	can be used to retrieve info and initiate a TCP session 
+	can be used to retrieve info and initiate TCP sessions
 	with the iOS device.
 	*/
 	class Device
@@ -29,8 +29,8 @@ namespace peertalk
 		@param device The underlying usbmuxd device.
 		*/
 		explicit Device(const usbmuxd_device_info_t& device);
-		Device();
 		Device(const Device& other);
+		Device & operator=(const Device& rhs);
 
 		/**
 		Returns whether or not the device is connected
@@ -39,7 +39,13 @@ namespace peertalk
 		*/
 		bool isConnected() const;
 
-		int handle() const;
+		/**
+		Gets the usbmuxd handle for the device. This handle can be
+		used to comminucate directly with the device using libusbmuxd.
+		*
+		@return The usbmuxd handle
+		*/
+		int usbmuxdHandle() const;
 
 		/**
 		Returns the 40 character UUID associated with the device.
@@ -83,6 +89,9 @@ namespace peertalk
 		usbmuxd_device_info_t _device;
 		std::string _uuid;
 		std::string _productName;
+
+		//Removes this device from the device list
+		void removeFromDeviceList();
 
 		friend class Peertalk;
 		friend std::ostream & operator<<(std::ostream & os, const Device& v);

@@ -60,10 +60,6 @@ void Peertalk::addDevice(const usbmuxd_device_info_t& device)
 {
 	if(_devices.find(device.handle) == _devices.end())
 		_devices.insert(DeviceMap::value_type(device.handle, Device::shared_ptr(new Device(device))));
-
-	std::cout << "Added:  " << *_devices[device.handle] << std::endl;
-	
-	_devices[device.handle]->connect(2345);
 }
 
 void Peertalk::removeDevice(const usbmuxd_device_info_t& device)
@@ -71,10 +67,9 @@ void Peertalk::removeDevice(const usbmuxd_device_info_t& device)
 	DeviceMap::iterator it = _devices.find(device.handle);
 
 	if(it != _devices.end())
+	{
 		_devices.erase(it);
-
-
-	std::cout << "Removed: ";
+	}
 }
 
 Peertalk::~Peertalk()

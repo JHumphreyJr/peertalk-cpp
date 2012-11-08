@@ -35,15 +35,6 @@ Device::ProductMap Device::s_products =
 		(0x129d, "Apple TV 2G")
 		(0x12a7, "Apple TV 3G");
 
-Device::Device() :
-	_connected(false),
-	_device(),
-	_uuid(),
-	_productName()
-{
-	std::cout << "Default Device Constructor" << std::endl;
-}
-
 Device::Device(const usbmuxd_device_info_t& device) : 
 	_connected(true),
 	_device(device),
@@ -68,6 +59,20 @@ Device::Device(const Device& other) :
 	std::cout << "Added " << this << " to device list (copy)" << std::endl;
 }
 
+Device & Device::operator=(const Device& rhs)
+{
+	removeFromDeviceList();
+	
+	this->_connected = rhs._connected;
+	this->_device = rhs._device;
+	this->_uuid = rhs._uuid;
+	this->_productName = rhs._productName;
+
+	s_devices[_uuid].push_back(this);
+
+	return *this;
+}
+
 const std::string & Device::uuid() const
 {
 	return _uuid;
@@ -78,7 +83,7 @@ const std::string & Device::productName() const
 	return _productName;
 }
 
-int Device::handle() const
+int Device::usbmuxdHandle() const
 {
 	return _device.handle;
 }
@@ -92,41 +97,24 @@ int Device::connect(uint16_t port)
 {
 	int retval = 0;
 
-	int sfd = usbmuxd_connect(_device.handle, port);
-	if(sfd > 0)
-	{
-		uint32_t sent_bytes;
-		const char *message = "Hello iOS!";
-		retval = usbmuxd_send(sfd, message, strlen(message) + 1, &sent_bytes);
-
-		if(retval == 0)
-		{
-			std::cout << sent_bytes << " bytes sent" << std::endl;
-
-			uint32_t recv_bytes;
-
-			uint8_t *data = new uint8_t[100];
-			retval = usbmuxd_recv(sfd, (char*)data, 100, &recv_bytes);
-
-			std::cout << "Received " << recv_bytes << " bytes" << std::endl;
-		}
-		usbmuxd_disconnect(sfd);
-	}
-	else
-	{
-		retval = sfd;
-		std::cout << "Failed to connect " << sfd << std::endl;
-	}
+	//TODO: Create a channel to manage the connection
+	//int sfd = usbmuxd_connect(_device.handle, port);
 
 	return retval;
-}	
+}
 
-Device::~Device()
+void Device::removeFromDeviceList()
 {
+	//Remove this device from the tracked devices
 	std::vector<Device*>& devs = s_devices[_uuid];
 	std::vector<Device*>::iterator it = std::find(devs.begin(), devs.end(), this);
 	if(it != devs.end())
 		devs.erase(it);
+}
+
+Device::~Device()
+{
+	removeFromDeviceList();
 
 	std::cout << "Removed " << this << " from device list" << std::endl;
 }
