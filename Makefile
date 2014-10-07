@@ -35,7 +35,7 @@ peertalk: $(OBJS)
 #create static library
 	ar rcs $(BIN_DIR)/libpeertalk.a $(OBJS)
 #create shared library
-	$(CXX) -shared -Wl,-soname,lib$@.so.0.1 -o $(BIN_DIR)/lib$@.so.0.1 $(OBJS)
+	$(CXX) -lusbmuxd -shared -Wl,-install_name,lib$@.so.0.1 -o $(BIN_DIR)/lib$@.so.0.1 $(OBJS)
 	ln -sf $(BIN_DIR)/lib$@.so.0.1 $(BIN_DIR)/lib$@.so
 #copy headers
 	cp $(HDR_PUB) $(HDR_DIR)

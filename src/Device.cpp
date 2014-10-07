@@ -38,7 +38,7 @@ Device::ProductMap Device::s_products =
 Device::Device(const usbmuxd_device_info_t& device) : 
 	_connected(true),
 	_device(device),
-	_uuid(_device.uuid),
+	_uuid(_device.udid),
 	//Lookup product name in the products map, If it does not exisit
 	// then format a string with product_id. "Unknown Device (0x12a6)"
 	_productName(s_products.find(_device.product_id) == s_products.end() ? 
